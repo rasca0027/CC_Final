@@ -1,18 +1,28 @@
+import ddf.minim.*;
+
 class HandShake {
+  
   int state;
   int x;
   boolean error;
   boolean finished;
   int counter;
+  AudioPlayer come1, come2;
+  boolean come1played, come2played;
   
-  HandShake () {
+  
+  HandShake (AudioPlayer audio1, AudioPlayer audio2) {
   // constructor
     state = 0;
     x = 250;
     error = false;
     finished = false;
     counter = 0;
-  }
+    come1 = audio1;
+    come2 = audio2;
+    come1played = false;
+    come2played = false;
+  } 
   
   void shake(boolean touch) {
     background(200);
@@ -116,7 +126,26 @@ class HandShake {
   }
   
   void errorOccured() {
-    text("CONNECTION FAIL", width/2 - 100, height/2);
+    int r = int(random(2));
+    if (!come1.isPlaying() && !come2.isPlaying()) {
+      if (r == 0) {
+        if (come1played)
+          come1.rewind();
+        come1.play();
+        come1played = true;
+      } else {
+        if (come2played)
+          come2.rewind();
+        come2.play();
+        come2played = true;
+      }
+    }
+    
+    delay(100);
+    fill(204, 0 ,0);
+    text("CONNECTION FAIL", width/2 - 160, height/2);
     text("WHY ARE YOU LEAVING", width/2 - 200, height/2 + 50);
+    fill(0);
+    
   }
 }

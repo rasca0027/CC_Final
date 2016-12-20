@@ -1,20 +1,47 @@
+import ddf.minim.*;
+
 class FaceCloud {
 
   PShape boxCloud;
   ArrayList<Bg> listofbgs = new ArrayList<Bg>();
+  AudioPlayer player;
+  boolean played;
+  int x;
+  int speed;
+  boolean fn;
   String filename;
   
-  FaceCloud() {
+  
+  FaceCloud(AudioPlayer pl) {
     //size(1024, 768, P3D);
     smooth();
     //frameRate(10);
     filename = "1";
+    // play file
+    player = pl;
+    played = false;
+    x = 0;
+    speed = 5;
+    fn = false;
   }
+   
+  void playVoice() {
+    played = true;
+    delay(1000);
+    player.play();
+  } 
    
   void draw2() {
     background(0);
+    x += speed;
+    if ((x > width) || (x<0))
+      speed = -speed;
+      
+    if (played && !player.isPlaying() && (x > width/2))
+      fn = true;
     
-    camera(mouseX, height/2, (height/2) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
+    //camera(mouseX, height/2, (height/2) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
+    camera(x, height/2, (height/2) / tan(PI/6), width/2, height/2, 0, 0, 1, 0);
     
     backing();
     for (int i=0; i<listofbgs.size(); i++) {
@@ -25,19 +52,27 @@ class FaceCloud {
     rotateZ(PI/12);
     //translate(0, -50, 0);
     //shape(boxCloud);
+    
+    // control mouth animation
+    if (player.isPlaying()) {
+      int mouth = int(random(2));
+      if (mouth == 0)
+        filename = "1";
+      else
+        filename = "171";
+    } else { // not playing
+      int eye = int(random(50));
+      if (eye <= 2)
+        filename = "90";
+      else
+        filename = "1";
+    }
+    
     readFile();
     
   }
   
   
-  void mousePressed() {
-    filename = "171";
-  }
-  
-  void mouseReleased() {
-    filename = "1";
-  }
-   
    
   void readFile() {
     
@@ -66,7 +101,7 @@ class FaceCloud {
       //stroke(255, 255, 255);
       stroke(0, intensity * 1.5, 0);
       // Here we'll draw a little line for each point this is much faster than a more complex object and we'll be drawing a lot of them
-      line(x, y, z, x+1, y+1, z+1);
+      line(x, y, z, x+0.1, y+0.1, z+0.1);
       /* too slow
       pushMatrix();
       translate(x, y, z);
